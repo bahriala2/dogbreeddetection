@@ -1,0 +1,187 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dog Breed Prediction</title>
+    <style>
+        body {
+            background-color: #0f0f0f;
+            color: white;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+
+        .upload-text {
+            color: #ffffff;
+            margin-bottom: 10px;
+        }
+
+        .upload-container {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .drag-drop-area {
+            border: 2px dashed #666;
+            border-radius: 8px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .cloud-icon {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: #666;
+        }
+
+        .file-info {
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 10px;
+        }
+
+        .browse-btn {
+            background-color: #1a1a1a;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 4px;
+            border: 1px solid #333;
+            cursor: pointer;
+            float: right;
+        }
+
+        .predict-btn {
+            background-color: #1a1a1a;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 4px;
+            border: 1px solid #333;
+            cursor: pointer;
+            font-size: 1em;
+            width: 100%;
+        }
+
+        .message {
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+
+        .success {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .error {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .result-container {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .uploaded-image {
+            max-width: 100%;
+            max-height: 400px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .prediction-text {
+            font-size: 1.5em;
+            margin-top: 20px;
+            padding: 10px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Dog Breed Prediction</h1>
+        
+        {% if error %}
+        <div class="message error">{{ error }}</div>
+        {% endif %}
+        
+        <p class="upload-text">Upload an image of the dog</p>
+        
+        <form method="post" enctype="multipart/form-data">
+            <div class="upload-container">
+                <p>Choose an image...</p>
+                <div class="drag-drop-area" onclick="document.getElementById('file-input').click()">
+                    <div class="cloud-icon">☁️</div>
+                    <div>Drag and drop file here</div>
+                    <div class="file-info">Limit 200MB per file • PNG</div>
+                    <input type="file" id="file-input" name="file" accept=".png">
+                </div>
+                <button type="button" class="browse-btn" onclick="document.getElementById('file-input').click()">
+                    Browse files
+                </button>
+            </div>
+            
+            <button type="submit" class="predict-btn">Predict</button>
+        </form>
+
+        {% if prediction and image_file %}
+        <div class="result-container">
+            <img src="{{ url_for('static', filename='uploads/' + image_file) }}" alt="Uploaded dog image" class="uploaded-image">
+            <div class="prediction-text">
+                The Dog Breed is: {{ prediction }}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <script>
+        const fileInput = document.getElementById('file-input');
+        const dragArea = document.querySelector('.drag-drop-area');
+
+        // Drag and drop functionality
+        dragArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dragArea.style.borderColor = '#fff';
+        });
+
+        dragArea.addEventListener('dragleave', () => {
+            dragArea.style.borderColor = '#666';
+        });
+
+        dragArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dragArea.style.borderColor = '#666';
+            fileInput.files = e.dataTransfer.files;
+        });
+
+        // File input change handler
+        fileInput.addEventListener('change', () => {
+            if (fileInput.files.length > 0) {
+                console.log('File selected:', fileInput.files[0].name);
+            }
+        });
+    </script>
+</body>
+</html>
